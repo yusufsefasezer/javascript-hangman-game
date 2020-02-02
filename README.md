@@ -2,7 +2,7 @@
 A simple Hangman Game developed with JavaScript
 
 # Demo
-www.yusufsezer.com/projects/javascript-hangman-game/
+www.yusufsezer.com/javascript-hangman-game/
 
 # License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details
