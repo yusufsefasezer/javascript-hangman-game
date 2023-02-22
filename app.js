@@ -1,78 +1,87 @@
-var alphabet = [],
-    words = [],
-    selectedWord = "",
+'use strict';
+
+var resultElem = {},
+    currentStatus = {},
+    selectedWord = '',
     numberOfTries = 0,
-    countOfFound = 0,
-    totalRights = 7,
-    results = null,
-    statusArea = null;
-
-function initialize() {
-    results = document.getElementById("results");
-    statusArea = document.getElementById("current-status");
-    alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    words = ["yusuf", "sefa", "sezer", "yusufsefa", "yusufsezer", "sefasezer", "yusufsefasezer"];
-
-    var position = randomNumber(0, words.length);
-    selectedWord = words[position].toUpperCase();
-
-    for (var i = 0; i < selectedWord.length; i++) {
-        var input = document.createElement("input");
-        input.type = "text";
-        input.maxLength = 1;
-        input.readOnly = true;
-        document.getElementById("inputs").appendChild(input);
-    }
-
-    for (var i = 0; i < alphabet.length; i++) {
-        var btn = document.createElement("button");
-        btn.innerHTML = alphabet[i];
-        btn.onclick = checkIt;
-        document.getElementById("buttons").appendChild(btn);
-    }
-}
-
-function checkIt() {
-    var currentValue = this.innerHTML,
-        foundIt = true;
-
-    for (var i = 0; i < selectedWord.length; i++) {
-        if (selectedWord[i] == currentValue) {
-            document.getElementsByTagName("input")[i].value = currentValue;
-            foundIt = false;
-            countOfFound++;
-        }
-    }
-
-    if (countOfFound == selectedWord.length) {
-        results.innerHTML = "Congratulations !!!";
-        return;
-    }
-
-    this.disabled = true;
-
-    if (foundIt) {
-        numberOfTries++;
-        statusArea.src = "img/status_" + numberOfTries + ".gif";
-
-        results.innerHTML = "Try it " + numberOfTries + " times.";
-        results.innerHTML += "<br />";
-        results.innerHTML += "You have " + (totalRights - numberOfTries) + " remaining.";
-
-        if (numberOfTries == totalRights) {
-            var btns = document.getElementsByTagName("button");
-
-            for (var i = 0; i < btns.length; i++) {
-                btns[i].disabled = true;
-            }
-        }
-
-    }
-
-}
+    numberOfFound = 0,
+    totalRights = 7;
 
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-window.onload = initialize;
+function check() {
+    var currentValue = this.textContent,
+        found = false;
+
+    for (var index = 0, length = selectedWord.length; index < length; index++) {
+        if (selectedWord[index] == currentValue) {
+            document.getElementsByTagName('input')[index].value = currentValue;
+            found = true;
+            numberOfFound++;
+        }
+    }
+
+    if (numberOfFound == selectedWord.length) {
+        resultElem.textContent = 'Congratulations !!!';
+        return disableButtons(document.getElementsByTagName('button'));
+    }
+
+    this.disabled = true;
+
+    if (found === false) {
+        numberOfTries++;
+        currentStatus.src = 'img/status_' + numberOfTries + '.gif';
+
+        var resultText = 'Tried ' + numberOfTries + ' times.'
+        resultText += '<br />';
+        resultText += 'You have ' + (totalRights - numberOfTries) + ' remaining.';
+        resultElem.innerHTML = resultText;
+
+        if (numberOfTries == totalRights) {
+            disableButtons(document.getElementsByTagName('button'));
+        }
+    }
+}
+
+function disableButtons(buttons) {
+    for (var index = 0, length = buttons.length; index < length; index++) {
+        buttons[index].disabled = true;
+    }
+}
+
+function initElement() {
+    resultElem = document.getElementById('results');
+    currentStatus = document.getElementById('current-status');
+
+    var alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    var words = ['yusuf', 'sefa', 'sezer', 'yusufsefa', 'yusufsezer', 'sefasezer', 'yusufsefasezer'];
+    var position = randomNumber(0, words.length);
+    selectedWord = words[position].toUpperCase();
+
+    var inputFragment = document.createDocumentFragment();
+    for (var index = 0, length = selectedWord.length; index < length; index++) {
+        var newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.maxLength = 1;
+        newInput.readOnly = true;
+        inputFragment.appendChild(newInput);
+    }
+    document.getElementById('inputs').appendChild(inputFragment);
+
+    var buttonFragment = document.createDocumentFragment();
+    for (var index = 0; index < alphabet.length; index++) {
+        var newButton = document.createElement('button');
+        newButton.textContent = alphabet[index];
+        newButton.addEventListener('click', check);
+        buttonFragment.appendChild(newButton);
+    }
+    document.getElementById('buttons').appendChild(buttonFragment);
+}
+
+function init() {
+    initElement();
+}
+
+window.addEventListener('DOMContentLoaded', init);
